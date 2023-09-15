@@ -3,7 +3,8 @@
 # Project Title: XXX
 
 # Group Members:
-# Oliver Pandian
-# Matthew Adams
-# Christopher Biekeu
-# Funsho Olatunji
+Oliver Pandian
+Matthew Adams
+Christopher Biekeu
+Pouria Tayebi
+Funsho Olatunji
