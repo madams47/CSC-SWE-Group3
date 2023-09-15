@@ -22,5 +22,5 @@ Nearby chat rooms
 Video streaming from computer to phone
 - If you're ever away from home, but want to monitor something around your house, just point your computer's webcam at it and you will be able to stream the live feed from your phone.
 - Might need to add some flashy features so we have a need for a database.
-- Maybe we could use AI to detect and alert when something out of the ordinary happens. Push notification to phone to suggest the user check out what's going on with their video stream.
+- Maybe we could use AI to detect and alert when something out of the ordinary happens. Push notification to phone to suggest the user check out what's going on with their video stream. (Forewarning, I have no idea how difficult it would be to achieve this)
 
