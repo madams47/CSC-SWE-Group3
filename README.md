@@ -7,4 +7,4 @@
 - Funsho Olatunji
 
 # Project
-*This is a placeholder for Project Name*
+*Work Item Management System*
