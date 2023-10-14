@@ -1,10 +1,10 @@
 # CSC-SWE-Group3
 ## Group Members:
-- Oliver Pandian
 - Matthew Adams
 - Christopher Biekeu
+- Oliver Pandian
 - Pouria Tayebi
-- Funsho Olatunji
+
 
 # Project
 *Work Item Management System*
