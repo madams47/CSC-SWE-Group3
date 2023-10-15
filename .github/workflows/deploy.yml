@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  applicationfolder: spring-boot-hello-world-example
+  applicationfolder: WorkItemManagementSystem
   AWS_REGION: us-east-1
   S3BUCKET: csc-swe-group3-stack-webappdeploymentbucket-1ta9b82ci7bd8 
 
