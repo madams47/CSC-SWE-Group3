@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const hostname = '127.0.0.1'; // Your server ip address
+const hostname = '18.205.236.145'; // Your server ip address
 const port = 3000;
 
 const version = '1.0.0.0'
