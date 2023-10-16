@@ -1,7 +1,7 @@
 {
   "name": "nodejs-aws-codedeploy-pipeline",
   "version": "1.0.0",
-  "description": "Deploy nodejs app to aws ec2 ubuntu server with aws codedeploy and aws pipeline and Github action - CI / CD tutorial",
+  "description": "Deploy nodejs app to aws ec2 ubuntu server with aws codedeploy and aws pipeline and Github action - CI / CD",
   "main": "app.js",
   "scripts": {
     "test": "test",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/saasscaleup/nodejs-aws-codedeploy-pipeline.git"
+    "url": "git+https://github.com/madams47/CSC-SWE-Group3"
   },
   "keywords": [
     "aws",
@@ -26,12 +26,12 @@
     "nodejs",
     "express.js"
   ],
-  "author": "ScaleUp SaaS",
+  "author": "Matthew Adams",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/saasscaleup/nodejs-aws-codedeploy-pipeline/issues"
+    "url": "https://github.com/madams47/CSC-SWE-Group3/issues"
   },
-  "homepage": "https://github.com/saasscaleup/nodejs-aws-codedeploy-pipeline#readme",
+  "homepage": "https://github.com/madams47/CSC-SWE-Group3#readme",
   "dependencies": {
     "express": "^4.18.1"
   }

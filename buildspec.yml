@@ -1,0 +1,22 @@
+version: 0.2
+# If one ever needs to put a private key, or something else that shouldn't be stored plaintext, into this file -- then they should first look into
+# the AWS parameter store. We can store our 'secrets' there.
+phases: 
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo "📦 installing packages..."
+      - echo "✅ Packages installed successfully."
+  pre_build:
+    commands: 
+      - echo "⚙️ Testing..."
+      - echo "✅ Tests passed successfully."
+  build:
+    commands:
+      - echo "🚧 Starting compiling packages..."
+      - echo "✅ Build passed successfully."
+  post_build:
+    commands:
+      - echo "🚚 Performing post-build packing and operations..."
+      - echo "✅ Post build successful"
