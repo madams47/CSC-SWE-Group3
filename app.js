@@ -1,10 +1,11 @@
 const express = require('express');
 const database = require('./src/database');
 const app = express();
-const hostname = 'localhost'; //'18.205.236.145'; // IP address of the AWS EC2 server
-const port = 8000;
+const hostname = '34.207.59.25'; // IP address of the AWS EC2 server. Use when pushing to main (by pull request)
+//const hostname = 'localhost'; // use when debugging
+const port = 3000;
 
-const version = '1.0.0.0'
+const version = '1.0.0.2'
 const groupName = 'CSC-SWE-Group3';
 
 // home page
@@ -20,10 +21,16 @@ app.get('/error', (req, res) => {
 
 }) 
 
-app.get('/showTables', (req, res) => {
-    var tables = database.getTables();
+app.get('/showTables', async function(req, res){
+    var tables = await database.getTables();
     console.log(tables);
     res.send(tables);
+})
+
+app.get('/showMaterials', async function(req, res){
+    var materials = await database.getMaterials();
+    console.log(materials);
+    res.send(materials);
 })
 
 app.listen(port, () => {

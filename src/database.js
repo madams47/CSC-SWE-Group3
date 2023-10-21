@@ -9,9 +9,21 @@ var connection = mysql.createConnection({
 
 exports.getTables = async function () {
     var sql = "SHOW tables";
-    var ret;
-    await connection.query(sql, (err, tables) => {
-        console.log(tables);
-    })
+    return makeQuery(sql);
 };
 
+exports.getMaterials = async function () {
+    var sql = "SELECT * FROM Material";
+    return makeQuery(sql);
+};
+
+function makeQuery(sqlCommand){
+    return new Promise((resolve, reject) => {
+        connection.query(sqlCommand, (err, tables) => {
+            if(err)
+                reject(err);
+            else
+                resolve(tables);
+        });
+    });
+};
