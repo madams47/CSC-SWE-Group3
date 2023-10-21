@@ -31,6 +31,11 @@ class WorkItemStatus{
 }
 
 class CustomerPayments{
+    constructor(payments, amount, payeeName){
+      this.payments = payments;
+      this.amount = amount;
+      this.payeeName = payeeName;
+    }
     // contains an array of payments, and other payment information
     // TODO
 }
@@ -47,6 +52,19 @@ class Product{
     getTotalCost(){
         return this.unitPrice * quantity.parse;
     }
+}
+
+class Labor{
+  constructor(unitPrice, optionalDescription, selectecLaborType, quantity){
+    this.unitPrice = unitPrice;
+    this.optionalDescription = optionalDescription;
+    this.selectecLaborType = selectecLaborType;
+    this.quantity = quantity;
+  }
+
+  getTotalCost(){
+    return this.unitPrice * quantity.parse;
+  }
 }
 
 class Quantity{
@@ -85,6 +103,18 @@ const E_QuantityUnit = {
     other: "Other"
 }
 
-class Labor{
-    
+const E_LaborType = {
+  carpet: "Carpet",
+  vinyl: "Vinyl",
+  title: "Title",
+  skimcoat: "Skimcoat",
+  covebase: "Covebase",
+  other: "Other"
+}
+
+const E_PaymentType = {
+  card: "Card",
+  check: "Check",
+  cash: "cash",
+  other: "Other"
 }
