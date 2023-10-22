@@ -1,5 +1,5 @@
 // Top Level data structure, contains all following classes as parameters. Represents the entire work item.
-class WorkItem{
+export class WorkItem{
     constructor(id, workItemHeaderData, WorkItemStatus, CustomerPayments, Products) {
         this.id = id;
         this.workItemHeaderData = workItemHeaderData;
