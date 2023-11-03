@@ -1,8 +1,8 @@
 // Top Level data structure, contains all following classes as parameters. Represents the entire work item.
 export class WorkItem{
-    constructor(id, workItemHeaderData, WorkItemStatus, CustomerPayments, Products) {
-        this.id = id;
-        this.workItemHeaderData = workItemHeaderData;
+    constructor(ID, WorkItemHeaderData, WorkItemStatus, CustomerPayments, Products) {
+        this.ID = ID;
+        this.WorkItemHeaderData = WorkItemHeaderData;
         this.WorkItemStatus = WorkItemStatus
         this.CustomerPayments = CustomerPayments;
         this.Products = Products; // list of Product objects
@@ -10,7 +10,7 @@ export class WorkItem{
 }
 
 // Represents the data relevant only to the header of the 
-class WorkItemHeaderData{
+export class WorkItemHeaderData{
     constructor(customerName, customerPhone, secondaryPhone, customerEmail, jobLocation, jobName, contractDate){
         this.customName = customerName;
         this.customerPhone = customerPhone;
@@ -22,7 +22,7 @@ class WorkItemHeaderData{
     }
 }
 
-class WorkItemStatus{
+export class WorkItemStatus{
     constructor(completed, remainingBalance, customerPayments){
         this.completed = completed;
         this.remainingBalance = remainingBalance;
@@ -35,7 +35,7 @@ class CustomerPayments{
     // TODO
 }
 
-class Product{
+export class Product{
     constructor(inventoryNumber, productName, manufacturer, unitPrice, quantity){
         this.inventoryNumber = inventoryNumber;
         this.productName = productName;
@@ -49,7 +49,7 @@ class Product{
     }
 }
 
-class Quantity{
+export class Quantity{
     constructor(quantityString, quantityUnit){
         this.quantityString = quantityString;
         this.quantityUnit = quantityUnit;
@@ -64,7 +64,7 @@ class Quantity{
     }
 }
 
-const E_QuantityUnit = {
+export const E_QuantityUnit = {
     linearFeet: "ft.",
     feetSquared: "ft.2",
     inches: "in.",

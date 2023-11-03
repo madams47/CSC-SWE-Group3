@@ -1,8 +1,8 @@
 {
   "name": "nodejs-aws-codedeploy-pipeline",
-  "type": "module",
   "version": "1.0.0",
   "description": "Deploy nodejs app to aws ec2 ubuntu server with aws codedeploy and aws pipeline and Github action - CI / CD",
+  "type" : "module",
   "main": "app.js",
   "scripts": {
     "test": "test",
@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/madams47/CSC-SWE-Group3#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.1",
     "mysql": "^2.18.1"
   }

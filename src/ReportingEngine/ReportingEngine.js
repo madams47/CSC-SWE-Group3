@@ -1,36 +1,36 @@
-import WorkItem from "../WorkItemEditor/WorkItemObject.js"
+import * as WorkItem from "../WorkItemEditor/WorkItemObject.js"
 import * as ErrorCode from "./ErrorCodes.js"
-import * as TextFile from "./Operations/TextFileOperations.js"
+import * as TextFile from "./Operations/TextFileOperations/TextFileOperations.js"
 
-// TODO
-// Need to actually test this with real work item data
-// I am not entirely sure that we are able to access the work item data
-// from down in the Operations/TextFileOperations.js class, and won't be 
-// able to know until we test it.
-//
-// To this end, I am also not sure if the TextFileOperations class is able
-// to actually write out a file to the server yet, because the code is untested 
-// (although the code exists to do it, I just refuse to assume it works in it's current state).
-//
-// Ultimately, once this ReportingEngine starts working, we should end up with 
-// .txt files stored on the server's file system. I believe that by using Express,
-// we can upload the file to the client's computer to finish the "Generate report transaction"
-export class ReportingEngine{
-    GenerateReports(WorkItemList, operation, exportType){
-        for(var workItem in WorkItemList){
-            if(typeof(workItem) !== WorkItem)
-                return new ErrorCode.ErrorCode(ErrorCode.E_InvalidWorkItem, "Work item " + workItem + " could not be cast to WorkItem type.");
+// Input: 
+// WorkItemList - array of WorkItem objects
+// operation - see SupportedOperations.js for available operations
+// exportType - 
+export function GenerateReports(WorkItemList, operation, exportType){
+    console.log("Enter GenerateReports")
+
+    if(WorkItemList.length == 0)
+        return new ErrorCode.ErrorCode(ErrorCode.E_WorkItemListEmpty, "Work item list is empty!");
+
+    // note that we currently are placing no restrictions on the amount of work items that can be sent (as long as it's more than 1)
+    // There are currently no plans to do so. 
+
+    for(let i = 0; i < WorkItemList.length; i++){
+        let workItem = WorkItemList[i];
+        console.log(typeof(workItem))
+        if(!(workItem instanceof WorkItem.WorkItem)){
+            return new ErrorCode.ErrorCode(ErrorCode.E_InvalidWorkItem, "Work item " + workItem + " could not be cast to WorkItem type.", JSON.stringify(workItem));
         }
-
-        if(typeof(exportType) != this.E_SupportedFileTypes){
-            return E_InvalidParameter;
-        }
-
-        TextFile.GenerateReport(WorkItemList, operation);
-    };
-
-    SupportedFileTypes = {
-        TextFile,
-        // CDFFile, // comma-delimited value format. Not yet supported
     }
-}
+
+    if(!SupportedFileTypes.includes(exportType)){
+        return new ErrorCode.ErrorCode(ErrorCode.E_InvalidParameter, "Export type '" + JSON.stringify(exportType) + "' is not included in SupportedFileTypes");
+    }
+
+    return TextFile.GenerateReport(WorkItemList, operation);
+};
+
+export const SupportedFileTypes = [
+    TextFile,
+    // CDFFile, // comma-delimited value format. Not yet supported
+]

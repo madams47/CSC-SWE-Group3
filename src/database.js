@@ -1,4 +1,6 @@
-const mysql = require('mysql')
+//const mysql = require('mysql')
+import mysql from 'mysql'
+
 var connection = mysql.createConnection({
     host: 'database-1.c24gbqidt5ob.us-east-2.rds.amazonaws.com',    
     port: "3306",
@@ -7,12 +9,12 @@ var connection = mysql.createConnection({
     database: 'mydb'
 })
 
-exports.getTables = async function () {
+export async function getTables() {
     var sql = "SHOW tables";
     return makeQuery(sql);
 };
 
-exports.getMaterials = async function () {
+export async function getMaterials() {
     var sql = "SELECT * FROM Material";
     return makeQuery(sql);
 };
