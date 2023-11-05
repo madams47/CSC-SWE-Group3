@@ -90,16 +90,15 @@ app.post('/login', (request, response) =>
     console.log(request.body.User_Name);
     console.log(request.body.Pass);
     const sql = "SELECT * FROM Login WHERE User_Name = ? AND  Pass = ?";
-    db.query("SELECT * FROM Login WHERE USER_NAME = ? AND PASS = ?", [User_Name, Pass], (err, result) => {
+    db.query(sql, [User_Name, Pass], (err, result) => {
         if(err) return response.json({Status: "Error", Error: "Error in running query"});
         if(result.length > 0) {
             return response.json({Status: "Success"})
         } else {
-            return 
-            {
-                console.log(db.query);
-                response.json({Status: "Error", Error: "Wrong Email or Password"});
-            }
+           
+               //console.log(db.query);
+               return response.json({Status: "Error", Error: "Wrong Email or Password"});
+            
         }
     })
 })

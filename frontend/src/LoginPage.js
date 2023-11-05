@@ -6,14 +6,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 
 function LoginPage() {
-
+    const [errorMessage, setErrorMessage] = useState('');
     const [User_Name, set_User_Name] = useState('');
     const [Pass, set_Pass] = useState('');
 
         axios.defaults.withCredentials = true;
         const navigate = useNavigate()
         axios.defaults.withCredentials = true;
-        const [error, setError] = useState('')
     
         const handleSubmit = (event) => {
             event.preventDefault();
@@ -21,10 +20,10 @@ function LoginPage() {
             .then(Response => {
                 if(Response.data.Status === 'Success') {
                     console.log("sucess")
-                    navigate('/GetAddress');
+                    navigate('/MainPage');
                 } else {
                     console.log("error");
-                    navigate('/');
+                    setErrorMessage('Invalid username or password. Please try again.');
                 }
             })
             .catch(err => console.log(err));
@@ -52,6 +51,7 @@ function LoginPage() {
                         <button className='btn btn-success w-50'>Login</button>
                     
                 </form>
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
             </div>
         </div>
     </div>

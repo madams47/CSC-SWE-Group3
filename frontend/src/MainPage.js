@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import e from 'cors';
+import { Link} from 'react-router-dom';
+//import e from 'cors';
 
 
   
   
-  function Getaddress() {
+  function MainPage() {
     const [Getaddress, setAddress] = useState ([]);
-    const [Address_ID, set_Address_ID] = useState([]);
+    //const [Address_ID, set_Address_ID] = useState([]);
 
-    const navigate=useNavigate();
+   // const navigate=useNavigate();
 
     useEffect(()=> {        
         axios.get('http://localhost:8081')
@@ -32,7 +32,8 @@ import e from 'cors';
     return (
         <div className= 'd-flex vh-100 bg-primary justify-content-center align-items-center'>
             <div className= 'w-50 bg-white rounded p-3'>
-                <Link to="/CreateAddress" className='btn btn-success'>Add</Link>
+                <Link to="/CreateAddress" className='btn btn-success'>Add Work Item</Link>
+                <Link to="/GenerateReport" className='btn btn-success'>Generate Report</Link>
                 <table className='table'>
                     <thead>
                         <tr>
@@ -65,4 +66,4 @@ import e from 'cors';
         </div>
             )
                     }
-export default Getaddress
+export default MainPage
