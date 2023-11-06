@@ -36,19 +36,19 @@ function LoginPage() {
         <div className='signup_container w-100 d-flex justify-content-center mt-5'>
             <div className='signup_form mt-5 w-50'>
                 <h4>Login</h4>
-                <form onSubmit={handleSubmit}>
+                <form name="LoginForm" onSubmit={handleSubmit}>
                 <div className='mb-2'>
                         <label htmlFor="">User_Name</label>
-                        <input type='text' placeholder='Enter Username' className='form-control' 
+                        <input name='LoginUsernameTextbox' type='text' placeholder='Enter Username' className='form-control' 
                         onChange={e => set_User_Name(e.target.value)}/>
                     </div> 
                     <div className='mb-2'>
                         <label htmlFor="">Pass</label>
-                        <input type='text' placeholder='Enter Password' className='form-control' 
+                        <input name='LoginPasswordTextbox' type='text' placeholder='Enter Password' className='form-control' 
                         onChange={e => set_Pass(e.target.value)}/>
                     </div> 
 
-                        <button className='btn btn-success w-50'>Login</button>
+                    <button name='LoginSubmitButton' className='btn btn-success w-50'>Login</button>
                     
                 </form>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
