@@ -7,14 +7,15 @@ import { Link} from 'react-router-dom';
   
   
   function MainPage() {
-    const [Getaddress, setAddress] = useState ([]);
+    const [GetWorkItem, setWorkItem] = useState ([]);
     //const [Address_ID, set_Address_ID] = useState([]);
 
    // const navigate=useNavigate();
 
-    useEffect(()=> {        
-        axios.get('http://localhost:8081')
-        .then(result => setAddress(result.data))
+    useEffect(()=> {    
+        //console.log("useEffect is running"); 
+        axios.get('http://localhost:8081/GetWorkItem')
+        .then(result => setWorkItem(result.data))
         .catch(err => console.log(err));
     },[])
 
@@ -32,29 +33,27 @@ import { Link} from 'react-router-dom';
     return (
         <div className= 'd-flex vh-100 bg-primary justify-content-center align-items-center'>
             <div className= 'w-50 bg-white rounded p-3'>
-                <Link to="/CreateAddress" className='btn btn-success'>Add Work Item</Link>
+                <Link to="/CreateWorkItem" className='btn btn-success'>Add Work Item</Link>
                 <Link to="/GenerateReport" className='btn btn-success'>Generate Report</Link>
                 <table className='table'>
                     <thead>
                         <tr>
-                        <th>Address_ID</th>
-                        <th>Street</th>
-                        <th>City</th>
-                        <th>State</th>
-                        <th>ZIP</th>
+                        <th>Job ID</th>
+                        <th>Contractor ID</th>
+                        <th>Job Name</th>
+                        <th>Order Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            Getaddress.map((data, i) => (
+                            GetWorkItem.map((data, i) => (
                                 <tr key={i}>
-                                    <td>{data.Address_ID}</td>
-                                    <td>{data.Street}</td>
-                                    <td>{data.City}</td>
-                                    <td>{data.State}</td>
-                                    <td>{data.ZIP}</td>
+                                    <td>{data.Job_ID}</td>
+                                    <td>{data.Contractor_ID}</td>
+                                    <td>{data.Job_Name}</td>
+                                    <td>{data.Order_Date}</td>
                                 <td>
-                                <Link to={'/UpdateAddress'} className='btn btn-primary'>Update</Link>
+                                <Link to={`/UpdateWorkItem/${data.Job_ID}`} className='btn btn-primary'>Update</Link>
                                 <button className='btn btn-danger ms-2'onClick={e => handleDelete(data.Address_ID)}>Delete</button>
                                 </td>
                                 </tr>
