@@ -61,8 +61,8 @@ app.post("/CreateAddress", (request, response) => {
     })
 })
 
+
 app.post("/CreateWorkItem", (request, response) => {
-    //const Job_ID = request.body.Job_ID;
     const Address_ID = request.body.Address_ID;
     const Contractor_ID = request.body.Contractor_ID;
     const Job_Name = request.body.Job_Name;
@@ -75,13 +75,46 @@ app.post("/CreateWorkItem", (request, response) => {
     const Total = request.body.Total;
     const Complete = request.body.Complete;
 
-    db.query("INSERT INTO job (Address_ID, Contractor_ID, Job_Name, Order_Date, install_Date, Payment_Terms, Salesman, Total_Material, Total_Labor, Total, Complete) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
-                                          [Address_ID, Contractor_ID, Job_Name, Order_Date, install_Date, Payment_Terms, Salesman,
-                                        Total_Material, Total_Labor, Total, Complete], (error, data) =>{
-        if(error) return response.json("Error")
-        else return response.send("Values Inserted");
-    })
-})
+    const sql = `
+        INSERT INTO job
+        (Address_ID, Contractor_ID, Job_Name, Order_Date, install_Date, Payment_Terms, Salesman,
+        Total_Material, Total_Labor, Total, Complete)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    db.query(sql, [Address_ID, Contractor_ID, Job_Name, Order_Date, install_Date, Payment_Terms, Salesman,
+        Total_Material, Total_Labor, Total, Complete], (error, data) => {
+            if (error) {
+                return response.json("Error: " + error.message);
+            } else {
+                return response.send("Values Inserted");
+            }
+        });
+});
+
+
+app.post("/deleteWorkItem/:Job_ID", (request, response) => {
+    const Job_ID = request.params.Job_ID;
+
+    const sql = `
+        DELETE FROM job
+        WHERE Job_ID = ?
+    `;
+
+    db.query(sql, [Job_ID], (error, result) => {
+        if (error) {
+            return response.status(500).json({ error: 'Error deleting work item' });
+        }
+
+        if (result.affectedRows === 0) {
+            return response.status(404).json({ error: 'Work item not found' });
+        }
+
+        return response.status(200).json({ message: 'Work item deleted successfully' });
+    });
+});
+
+
+
 
 app.get("/GetWorkItem", (request, response) => {
     const sql = "SELECT Job_ID, Contractor_ID, Job_Name, Order_Date FROM job";

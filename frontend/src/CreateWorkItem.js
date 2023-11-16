@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function CreateWorkItem()
 { 
-    const [Job_ID, set_Job_ID] = useState('');
+    //const [Job_ID, set_Job_ID] = useState('');
     const [Address_ID, set_Address_ID] = useState('');
     const [Contractor_ID, set_Contractor_ID] = useState('');
     const [Job_Name, set_Job_Name] = useState('');
@@ -21,7 +21,7 @@ function CreateWorkItem()
 
     function handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://localhost:8081/CreateWorkItem', {Job_ID,Address_ID,Contractor_ID,Job_Name,Order_Date, install_Date,Payment_Terms,
+        axios.post('http://localhost:8081/CreateWorkItem', {Address_ID,Contractor_ID,Job_Name,Order_Date, install_Date,Payment_Terms,
     Salesman,Total_Material,Total_Labor, Total, Complete })
         .then(result => {
             console.log(result);
