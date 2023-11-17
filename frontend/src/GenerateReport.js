@@ -3,7 +3,7 @@
 function GenerateReport() {
     return (
       <div>
-        <h2>Report:</h2>
+        <h2>Your report is being generated</h2>
       </div>
     );
   }
