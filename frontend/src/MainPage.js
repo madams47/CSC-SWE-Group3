@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 //import e from 'cors';
 
 
@@ -39,20 +39,20 @@ import { Link} from 'react-router-dom';
     };
 
 
-    const generateReport = () => {
-        console.log('Generate Report button clicked');
-        const selectedJobIds = selectedItems.join(',');
-        console.log('Selected Job IDs:', selectedJobIds);
-        axios.post('http://your-api-endpoint.com/generateReport', { jobIds: selectedJobIds })
-            .then(response => {
-                console.log(response.data); // Handle API response as needed
-                // Optionally, perform additional actions based on the response
-            })
-            .catch(error => {
-                console.error('Error generating report:', error);
-                // Handle error scenarios
-            });
-    };
+    // const generateReport = () => {
+    //     console.log('Generate Report button clicked');
+    //     const selectedJobIds = selectedItems.join(',');
+    //     console.log('Selected Job IDs:', selectedJobIds);
+    //     axios.post(`http://localhost:8081/generateReport/${selectedJobIds}`)
+    //         .then(response => {
+    //             console.log(response.data); // Handle API response as needed
+    //             // Optionally, perform additional actions based on the response
+    //         })
+    //         .catch(error => {
+    //             console.error('Error generating report:', error);
+    //             // Handle error scenarios
+    //         });
+    // };
 
 
 
@@ -60,7 +60,9 @@ import { Link} from 'react-router-dom';
         <div className= 'd-flex vh-100 bg-primary justify-content-center align-items-center'>
             <div className= 'w-50 bg-white rounded p-3'>
                 <Link to="/CreateWorkItem" className='btn btn-success'>Add Work Item</Link>
-                <Link to="/GenerateReport" className='btn btn-success' onClick={generateReport}>Generate Report</Link>
+                <Link to={{ pathname: `/GenerateReport/${selectedItems.join(',')}`}}>
+                    Generate Report
+                </Link>
                 <table className='table'>
                     <thead>
                         <tr>

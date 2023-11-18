@@ -1,7 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const mysql = require("mysql");
-const app = express();
+// const express = require("express");
+// const cors = require("cors");
+// const mysql = require("mysql");
+import express from 'express';
+import mysql from 'mysql';
+import cors from 'cors';
+import * as ReportingEngine from './ReportingEngine/ReportingEngine.js';
+import * as TextFileSupportedOperations from './ReportingEngine/Operations/TextFileOperations/SupportedOperations.js';
+import React from 'react'
+import { useLocation } from 'react-router-dom';
+const app = express(); 
 
 app.use(express.json());
 app.use(cors(
@@ -111,6 +118,60 @@ app.post("/deleteWorkItem/:Job_ID", (request, response) => {
 
         return response.status(200).json({ message: 'Work item deleted successfully' });
     });
+});
+
+app.post("/generateReport/:Work_Item_List", (request, res) =>{
+    // EXAMPLE OF MULTI QUERY
+    // return connection.query('SELECT * FROM `pages` where slug=?', [slug], (error, results, fields) => {
+    //     if (results.length) {
+    //       return connection.query('SELECT * FROM `pages` ORDER by RAND () LIMIT 2', (error, random, fields) => {
+    //         if (error) {
+    //           // handle error
+    //         }
+    //         // consolidate renders into a single call
+    //         // adjust the template file accordingly
+    //         return res.render('page', { title: results[0].title, page: results[0], pages: random });
+    //       });
+    //     } else {
+    //       console.log(req);
+    //       return res.render('error', { url: 'http://' + req.headers.host + req.url });
+    //     }
+    //   });
+
+    // const demoWorkItem = new WorkItem.WorkItem("100000",
+    //      new WorkItem.WorkItemHeaderData("Joe Schmoe", "443-123-4567", "410-987-6543", 
+    //          "jschmoe@organization.com", "Accident, MD", "Accident High School Renovations 2023", "01/15/2023"),
+    //      new WorkItem.WorkItemStatus(false, 100000.0, null), 
+    //      null, 
+    //      new WorkItem.Product(1234, "4in vinyl covebase BLK", "Johnsonite", 3.75, 600));
+
+    // app.get('/generateReport', (req, res) => {
+
+    console.log("Enter Generate Report:")
+    const workItemIdList = request.params.Work_Item_List.split(',');
+
+    console.log(workItemIdList)
+
+    const workItemList = [];
+
+    var result = ReportingEngine.GenerateReports(workItemList, 
+                TextFileSupportedOperations.SupportedOperations.CalculateRemainingBalanceOfSelectedWorkItems, 
+                ReportingEngine.SupportedFileTypes[0]);
+    console.log("Result type:  " + typeof(result) + " \tResult: " + result);
+    if(typeof(result) == "string"){
+        console.log("Downloading file")
+        res.download(result)
+    } else {
+        console.log("Sending result")
+        res.send(result)
+    }
+    
+
+    
+
+    const sql = `
+    
+    `
 });
 
 

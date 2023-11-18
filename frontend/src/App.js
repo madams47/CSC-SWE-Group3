@@ -22,7 +22,7 @@ function App() {
         <Route path='/UpdateWorkItem/:Job_ID' element={<UpdateWorkItem />}></Route>
         <Route path='/SignupForm/' element={<SignupForm />}></Route>
         <Route path='/Test/' element={<Test />}></Route>
-        <Route path='/GenerateReport/' element={<GenerateReport />}></Route>
+        <Route path='/GenerateReport/:Work_Item_List' element={<GenerateReport />}></Route>
       </Routes>
       </BrowserRouter>
     </div>
