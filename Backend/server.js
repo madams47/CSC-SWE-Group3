@@ -98,6 +98,61 @@ app.post("/CreateWorkItem", (request, response) => {
         });
 });
 
+app.post("/CreateJobMaterial", (request, response) => {
+    const Job_ID = request.body.Job_ID;
+    const Inventory_ID = request.body.Inventory_ID;
+    const Quantity = request.body.Quantity;
+    const sql = `
+        INSERT INTO job_material
+        (Job_ID, Inventory_ID, Quantity)
+        VALUES (?, ?, ?)`
+
+    db.query(sql, [Job_ID, Inventory_ID, Quantity], (error, data) => {
+        if (error) {
+            return response.json("Error: " + error.message)
+        } else {
+            return response.send("Values Inserted")
+        }
+    })
+})
+
+app.post("/CreateMaterial", (request, response) => {
+    const Inventory_ID = request.body.materialId; // hope this is auto incremementd
+    const Material_Name = request.body.Material_Name;
+    const Size = request.body.Size;
+    const Description = request.body.Description;
+    const Inventory_Unit_Price = request.body.Inventory_Unit_Price;
+    const Location = request.body.Location;
+
+    const sql = `
+        INSERT INTO material
+        (Inventory_ID, Material_Name, Size, Description, Inventory_Unit_Price, Location)
+        VALUES (?, ?, ?, ?, ?, ?)`
+
+    db.query(sql, [Inventory_ID, Material_Name, Size, Description, Inventory_Unit_Price, Location], (error, data) => {
+        if (error) {
+            return response.json("Error: " + error.message)
+        } else {
+            return response.send("Values Inserted")
+        }
+    })
+})
+
+app.get("/GetMaterials", (request, response) => {
+    const sql = "SELECT * FROM material";
+    db.query(sql, (error, data) => {
+        if(error) return app.json ("Error");
+        return response.json(data);
+    })
+} )
+
+app.get("/GetMaxMaterialId", (request, response) => {
+    const sql = "SELECT MAX(Inventory_ID) as maxId FROM material";
+    db.query(sql, (error, data) => {
+        if(error) return app.json ("Error");
+        return response.json(data[0].maxId);
+    })
+} )
 
 app.post("/deleteWorkItem/:Job_ID", (request, response) => {
     const Job_ID = request.params.Job_ID;
@@ -120,7 +175,7 @@ app.post("/deleteWorkItem/:Job_ID", (request, response) => {
     });
 });
 
-app.post("/generateReport/:Work_Item_List", (request, res) =>{
+app.post("/generateReport/:Work_Item_List/:Report_Type/:File_Type", (request, res) =>{
     // EXAMPLE OF MULTI QUERY
     // return connection.query('SELECT * FROM `pages` where slug=?', [slug], (error, results, fields) => {
     //     if (results.length) {
@@ -149,14 +204,22 @@ app.post("/generateReport/:Work_Item_List", (request, res) =>{
 
     console.log("Enter Generate Report:")
     const workItemIdList = request.params.Work_Item_List.split(',');
+    const reportType = request.params.Report_Type;
+    const fileType = request.params.File_Type;
 
     console.log(workItemIdList)
+    console.log(reportType)
+    console.log(fileType)
+
+    console.log("Expect: true")
+    console.log(Object.hasOwn(TextFileSupportedOperations.SupportedOperations, reportType))
+
 
     const workItemList = [];
 
     var result = ReportingEngine.GenerateReports(workItemList, 
-                TextFileSupportedOperations.SupportedOperations.CalculateRemainingBalanceOfSelectedWorkItems, 
-                ReportingEngine.SupportedFileTypes[0]);
+                reportType, 
+                ReportingEngine.SupportedFileTypes[0]); // todo only text files for now. 
     console.log("Result type:  " + typeof(result) + " \tResult: " + result);
     if(typeof(result) == "string"){
         console.log("Downloading file")

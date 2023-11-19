@@ -22,7 +22,9 @@ function GenerateReport() {
       event.preventDefault();
       console.log("Handle Submit:")
       console.log(Work_Item_List)
-      axios.post(`http://localhost:8081/generateReport/${Work_Item_List}`,)
+      const url = `http://localhost:8081/generateReport/${Work_Item_List}/${selectedReportType}/${selectedFileType}`
+      console.log(url)
+      axios.post(url)
           .then(result => {
               console.log(result);
               navigate('/MainPage')
