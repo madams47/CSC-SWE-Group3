@@ -1,6 +1,3 @@
-// const express = require("express");
-// const cors = require("cors");
-// const mysql = require("mysql");
 import express from 'express';
 import mysql from 'mysql';
 import cors from 'cors';
@@ -98,10 +95,19 @@ app.post("/CreateWorkItem", (request, response) => {
         });
 });
 
+// Retrieves the auto-incremented ID generated for the last (most recently added) work item
+app.get("/GetLastInsertedId", (request, response) =>{
+    const sql = `SELECT LAST_INSERT_ID() as ID`
+    db.query(sql, (error, data) => {
+        if(error) return app.json ("Error");
+        return response.json(data[0].ID);
+    })
+})
+
 app.post("/CreateJobMaterial", (request, response) => {
-    const Job_ID = request.body.Job_ID;
-    const Inventory_ID = request.body.Inventory_ID;
-    const Quantity = request.body.Quantity;
+    const Job_ID = request.body.jobId;
+    const Inventory_ID = request.body.inventoryId;
+    const Quantity = request.body.quantity;
     const sql = `
         INSERT INTO job_material
         (Job_ID, Inventory_ID, Quantity)
@@ -175,67 +181,67 @@ app.post("/deleteWorkItem/:Job_ID", (request, response) => {
     });
 });
 
-app.post("/generateReport/:Work_Item_List/:Report_Type/:File_Type", (request, res) =>{
-    // EXAMPLE OF MULTI QUERY
-    // return connection.query('SELECT * FROM `pages` where slug=?', [slug], (error, results, fields) => {
-    //     if (results.length) {
-    //       return connection.query('SELECT * FROM `pages` ORDER by RAND () LIMIT 2', (error, random, fields) => {
-    //         if (error) {
-    //           // handle error
-    //         }
-    //         // consolidate renders into a single call
-    //         // adjust the template file accordingly
-    //         return res.render('page', { title: results[0].title, page: results[0], pages: random });
-    //       });
-    //     } else {
-    //       console.log(req);
-    //       return res.render('error', { url: 'http://' + req.headers.host + req.url });
-    //     }
-    //   });
-
-    // const demoWorkItem = new WorkItem.WorkItem("100000",
-    //      new WorkItem.WorkItemHeaderData("Joe Schmoe", "443-123-4567", "410-987-6543", 
-    //          "jschmoe@organization.com", "Accident, MD", "Accident High School Renovations 2023", "01/15/2023"),
-    //      new WorkItem.WorkItemStatus(false, 100000.0, null), 
-    //      null, 
-    //      new WorkItem.Product(1234, "4in vinyl covebase BLK", "Johnsonite", 3.75, 600));
-
-    // app.get('/generateReport', (req, res) => {
-
+app.post("/generateReport/", (request, res) =>{
     console.log("Enter Generate Report:")
-    const workItemIdList = request.params.Work_Item_List.split(',');
-    const reportType = request.params.Report_Type;
-    const fileType = request.params.File_Type;
-
-    console.log(workItemIdList)
-    console.log(reportType)
-    console.log(fileType)
+    const workItemList = request.body.WorkItemList;
+    const reportType = request.body.selectedReportType;
+    const fileType = request.body.selectedFileType;
 
     console.log("Expect: true")
     console.log(Object.hasOwn(TextFileSupportedOperations.SupportedOperations, reportType))
 
-
-    const workItemList = [];
-
     var result = ReportingEngine.GenerateReports(workItemList, 
                 reportType, 
                 ReportingEngine.SupportedFileTypes[0]); // todo only text files for now. 
+
     console.log("Result type:  " + typeof(result) + " \tResult: " + result);
+
     if(typeof(result) == "string"){
-        console.log("Downloading file")
+        let filename = result;
         res.download(result)
     } else {
         console.log("Sending result")
         res.send(result)
     }
-    
-
-    
-
-    const sql = `
-    
-    `
 });
+
+app.post("/GetJobMaterialsMatchingIds/:Job_IDs", (request, response) => {
+    const Job_IDs = request.params.Job_IDs;
+    //.map(function(str) {return parseInt(str); })
+    console.log(Job_IDs)
+    db.query(`SELECT * FROM job_material WHERE Job_ID IN (?)`, [Job_IDs.split(",").map(function(str) {return parseInt(str);})], (error, jobMaterials) => {
+        if(error) return response.json ("Error");
+        return response.json(jobMaterials);       
+    })
+});
+
+app.post("/GetMaterialsMatchingInventoryIds/:Inventory_ID_List", (request, response) => {
+    const Inventory_ID_List = request.params.Inventory_ID_List;
+
+    db.query(`SELECT * FROM material WHERE Inventory_ID IN (?)`, [Inventory_ID_List.split(",").map(function(str) {return parseInt(str);})], (error, material) => {
+        if(error) {
+            console.log("Error")
+            return response.json(material)
+        } else{
+            return response.json(material);       
+        }
+    })
+    
+});
+
+app.post("/GetWorkItemByIds/:Work_Item_ID_List", (request, response) =>{
+    const Work_Item_ID_List = request.params.Work_Item_ID_List;
+
+    console.log(Work_Item_ID_List.split(",").map(function(str) {return parseInt(str)}))
+    db.query(`SELECT * FROM job WHERE Job_ID IN (?)`, [Work_Item_ID_List.split(",").map(function(str) {return parseInt(str)})], (error, workItem) => {
+        if(error) {
+            console.log(error) 
+        } else {
+            return response.json(workItem);
+        }
+    })
+
+})
 
 
 

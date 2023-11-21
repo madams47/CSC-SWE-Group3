@@ -30,10 +30,8 @@ function CreateWorkItem()
     const [selectedItems, setSelectedItems] = useState([]);
 
     // material (IDs) that the user added to this work item
-    const [addedMaterials, setAddedMaterials] = useState([]);
-    const [quantity, set_Quantity] = useState([]);
+    const [addedMaterialIds, setAddedMaterialIds] = useState([]);
     const [selectedMaterials, setSelectedMaterials] = useState ([]); //confusing name, but represents the selected items in the Added Materials grid
-
 
     const navigate=useNavigate();
 
@@ -51,8 +49,26 @@ function CreateWorkItem()
     Salesman,Total_Material,Total_Labor, Total, Complete })
         .then(result => {
             console.log(result);
+
+            axios.get('http://localhost:8081/GetLastInsertedId').then( result => {
+                const jobId = result.data
+                console.log("Result")
+                console.log(result.data)
+                for(let i = 0; i < addedMaterialIds.length; i++){
+                    const inventoryId = addedMaterialIds[i].Inventory_ID
+                    const quantity = addedMaterialIds[i].Quantity
+                    console.log("%d %d %d", jobId, inventoryId, quantity)
+                    axios.post('http://localhost:8081/CreateJobMaterial', {jobId, inventoryId, quantity})
+                    .then(result => {
+                        console.log(result);
+                        navigate('/MainPage')
+                    }).catch(error => console.log(error));
+                }
+            })
+
             navigate('/MainPage')
         }).catch(error => console.log(error));
+
     }
 
     function updateMaxMaterialId(){
@@ -83,12 +99,9 @@ function CreateWorkItem()
     }
 
     function addSelectedMaterialsToWorkItem(){
-        const temp = addedMaterials
+        const temp = addedMaterialIds
         Object.assign(temp, selectedItems)
-        console.log(selectedItems)
-        console.log(addedMaterials)
-        console.log(temp)
-        setAddedMaterials(temp)
+        setAddedMaterialIds(temp)
 
         let tempMaterials = []
         for(let i = 0; i < temp.length; i++){ // for every material added to the work item
@@ -96,22 +109,42 @@ function CreateWorkItem()
             // find the work item data in the database list by looping and matching ID
             for(let j = 0; j < MaterialsList.length; j++){
                 if(MaterialsList[j].Inventory_ID == temp[i]){
-                    console.log("Hello")
                     tempMaterials.push({
                         Inventory_ID : MaterialsList[j].Inventory_ID,
                         Material_Name : MaterialsList[j].Material_Name,
                         Size : MaterialsList[j].Size,
+                        Quantity : 0
                     })
 
                 }
             }
 
         }
-        setSelectedMaterials(tempMaterials)
+        setAddedMaterialIds(tempMaterials)
     }
 
-    function removeSelectedMaterialsFromWorkItem(){
+    const removeSelectedMaterialsFromWorkItem = () => {
+        const materialsToRemove = selectedMaterials
 
+        let temp = addedMaterialIds 
+        if(MaterialsList.length > 0){
+            for(let i = 0; i < materialsToRemove.length; i++){
+                for(let j = MaterialsList.length - 1; j >= 0; j--){
+                    if(MaterialsList[j].Inventory_ID == materialsToRemove[i]){
+                        console.log(MaterialsList[j])
+                        const found = addedMaterialIds.find(item => item.Inventory_ID === materialsToRemove[i])
+                        console.log("Removed")
+                        temp = temp.filter(item => item !== found)
+                        console.log(temp)
+                    }
+                }
+            }
+        }
+
+
+        setSelectedMaterials([])
+
+        setAddedMaterialIds(temp)
     }
 
     const handleCheckboxChange = (event, InventoryId) => {
@@ -123,7 +156,7 @@ function CreateWorkItem()
         }
     };
 
-    const handleCheckboxChangeAddedMaterials = (event, InventoryId) => {
+    const handleCheckboxChangeaddedMaterialIds = (event, InventoryId) => {
         const isChecked = event.target.checked;
         if (isChecked) {
             setSelectedMaterials([...selectedMaterials, InventoryId]);
@@ -131,11 +164,26 @@ function CreateWorkItem()
             setSelectedMaterials(selectedMaterials.filter(item => item !== InventoryId));
         }
     };
+
+    const handleQuantityChanged = (e, id) => {
+        const { value } = e.target;
+        setAddedMaterialIds((prevData) =>
+          prevData.map((row) => (row.Inventory_ID === id ? { ...row, Quantity: parseInt(value, 10) || 0 } : row))
+        );
+      };
+
     const tableCss = {
-        borderRadius: '20px',
-        height: '244px',
+        height: '80px',
         padding: '0 10px 10px 10px',
-        overflow: 'scroll',
+        overflow: 'auto',
+        border: '1px solid #999',
+        borderRadius: '4px',
+        padding: '10px',
+        margin: '5px',
+    }
+
+    const flexboxContainer = {
+        display: 'flex',
     }
 
     return (
@@ -205,75 +253,87 @@ function CreateWorkItem()
                 </form>
 
                 <div className='w-75 bg-white rounded p-3'>
-                    <h2>Materials (Database)</h2>
-                    <table style={tableCss} className='materialsTable'>
-                        <thead>
-                            <tr>
-                            <th>Inventory ID</th>
-                            <th>Material Name</th>
-                            <th>Size</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                MaterialsList.map((data, i) => (
-                                        <tr key={i}>
-                                        <td>
-                                            <input
-                                                type='checkbox'
-                                                onChange={(e) => handleCheckboxChange(e, data.Inventory_ID)}
-                                                checked={selectedItems.includes(data.Inventory_ID)}
-                                            />
-                                        </td>
-                                        <td>{data.Inventory_ID}</td>
-                                        <td>{data.Material_Name}</td>
-                                        <td>{data.Size}</td>
-                                        <td>{data.Description}</td>
-                                        <td>{data.Location}</td>
+                    <div className="flexbox-container" style={flexboxContainer}>
+                        <div>
+                            <h2>Materials (Database)</h2>
+                            <table style={tableCss} className='materialsTable'>
+                                <thead>
+                                    <tr>
+                                    <th>Inventory ID</th>
+                                    <th>Material Name</th>
+                                    <th>Size</th>
+                                    <th>Description</th>
+                                    <th>Location</th>
                                     </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                    <button onClick={addSelectedMaterialsToWorkItem}>Add Selected</button>
-
-                    <h2>Selected Materials</h2>
-                    <table style={tableCss} className='selectedMaterialsTable'>
-                        <thead>
-                            <tr>
-                            <th></th>
-                            <th>ID</th>
-                            <th>Material Name</th>
-                            <th>Size</th>
-                            <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                selectedMaterials.map((data, i) => (
-                                        <tr key={i}>
-                                        <td>
-                                            <input
-                                                type='checkbox'
-                                                onChange={(e) => handleCheckboxChangeAddedMaterials(e, data.Inventory_ID)}
-                                            />
-                                        </td>
-                                        <td>{data.Inventory_ID}</td>
-                                        <td>{data.Material_Name}</td>
-                                        <td>{data.Size}</td>
-                                        <td>
-                                            <input type="number" placeholder='Enter Quantity'  
-                                                onChange={e => set_Quantity(e.target.value)}/>
-
-                                        </td>
+                                </thead>
+                                <tbody>
+                                    {
+                                        MaterialsList.map((data, i) => (
+                                                <tr key={i}>
+                                                <td>
+                                                    <input
+                                                        type='checkbox'
+                                                        onChange={(e) => {
+                                                            handleCheckboxChange(e, data.Inventory_ID, i)}}
+                                                        checked={selectedItems.includes(data.Inventory_ID)}
+                                                    />
+                                                </td>
+                                                <td>{data.Inventory_ID}</td>
+                                                <td>{data.Material_Name}</td>
+                                                <td>{data.Size}</td>
+                                                <td>{data.Description}</td>
+                                                <td>{data.Location}</td>
+                                            </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </table>
+                            <button onClick={addSelectedMaterialsToWorkItem}>Add Selected</button>
+                        </div>
+                        <dir>
+                            <h2>Selected Materials</h2>
+                            <table style={tableCss} className='selectedMaterialsTable'>
+                                <thead>
+                                    <tr>
+                                    <th></th>
+                                    <th>ID</th>
+                                    <th>Material Name</th>
+                                    <th>Size</th>
+                                    <th>Quantity</th>
                                     </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                    <button onClick={removeSelectedMaterialsFromWorkItem}>Remove Selected</button>
+                                </thead>
+                                <tbody>
+                                    {
+                                        addedMaterialIds.map((data, i) => (
+                                                <tr key={i}>
+                                                <td>
+                                                    <input
+                                                        type='checkbox'
+                                                        onChange={(e) => {
+                                                            console.log("i: %d     id: %d", i, data.Inventory_ID)
+                                                            handleCheckboxChangeaddedMaterialIds(e, data.Inventory_ID)}}
+                                                        checked={selectedMaterials.includes(data.Inventory_ID)}
+                                                    />
+                                                </td>
+                                                <td>{data.Inventory_ID}</td>
+                                                <td>{data.Material_Name}</td>
+                                                <td>{data.Size}</td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        value={data.Quantity}
+                                                        onChange={(e) => handleQuantityChanged(e, data.Inventory_ID)}
+                                                        min={0}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </table>
+                            <button onClick={removeSelectedMaterialsFromWorkItem}>Remove Selected</button>
+                        </dir>
+                    </div>
                 </div>
                 <form onSubmit={handleAddMaterial}>
                      <h2>Add Material to Database</h2>

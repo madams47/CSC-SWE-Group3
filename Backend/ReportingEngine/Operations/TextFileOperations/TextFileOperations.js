@@ -1,6 +1,6 @@
 import * as TextFileSupportedOperations from "./SupportedOperations.js"
 import * as ErrorCode from "../../ErrorCodes.js"
-import * as WorkItem from "../../WorkItemObject.js"
+import * as WorkItem from "../../../../frontend/src/WorkItemObject.js"
 import * as FilenameGenerator from "../../FilenameGenerator.js"
 
 const PathToReports = "/Reports"
@@ -30,23 +30,28 @@ export function GenerateReport(workItemList, operation){
     console.log("Operation " + operation + " supported! Validating work item list...")
 
     // validate work item list 
-    for (let i = 0; i < workItemList.length; i++){
-        let workItem = workItemList[i]
-        if(!(workItem instanceof WorkItem.WorkItem)){
-            return new ErrorCode.ErrorCode(ErrorCode.E_InvalidWorkItem, "Object in workItemList (" + {workItem} + ") is not a valid work item.", workItem);
-        }
-    }
+    // for (let i = 0; i < workItemList.length; i++){
+    //     let workItem = workItemList[i]
+    //     if(!(workItem instanceof WorkItem.WorkItem)){
+    //         return new ErrorCode.ErrorCode(ErrorCode.E_InvalidWorkItem, "Object in workItemList (" + {workItem} + ") is not a valid work item.", workItem);
+    //     }
+    // }
     
-    console.log("Work item list valid!");
+    // console.log("Work item list valid!");
 
     // Perform the actual generation of the report (including saving the .txt file on server)
     console.log("Generate report: Calling method to generate file");
     var result;
+    console.log(operation)
+    console.log(TextFileSupportedOperations.SupportedOperations.CalculateRemainingBalanceOfSelectedWorkItems)
+    console.log(TextFileSupportedOperations.SupportedOperations.CalculateRemainingBalanceOfSelectedWorkItems.hasOwnProperty(operation))
+    console.log(TextFileSupportedOperations.SupportedOperations.GenerateWarehouseReceipt.hasOwnProperty(operation))
+
     switch(operation){
-        case TextFileSupportedOperations.SupportedOperations.CalculateRemainingBalanceOfSelectedWorkItems:
+        case "CalculateRemainingBalanceOfSelectedWorkItems":
             result = GenerateCalculateRemainingBalanceReport(workItemList)
             break;
-        case TextFileSupportedOperations.SupportedOperations.GenerateWarehouseReceipt:
+        case "GenerateWarehouseReceipt":
             result = GenerateWarehouseReceiptReport(workItemList);
             break;
         default:
@@ -103,19 +108,17 @@ function GenerateCalculateRemainingBalanceReport(workItemList){
     var totalBalance = 0.0;
     for (let i = 0; i < workItemList.length; i++){
         let workItem = workItemList[i]
-        var workItemHeaderData;
-        var workItemStatus;
+        var workItemInfo;
         try{
-            workItemHeaderData = workItem.WorkItemHeaderData;
-            workItemStatus = workItem.WorkItemStatus;
+            workItemInfo = workItem.Info;
         } catch (error){
             return new ErrorCode.ErrorCode(ErrorCode.E_InvalidWorkItem, "Could not get required information from work item object: " + workItem, null);
         }
 
-        content += "\r\n" + workItemHeaderData.jobName;
-        content += " Remaining balance: " + workItemStatus.remainingBalance;
+        content += "\r\n" + workItemInfo.Job_Name;
+        content += " Remaining balance: " + workItemInfo.Total;
 
-        totalBalance += workItemStatus.remainingBalance;
+        totalBalance += workItemInfo.Total;
     }
     content += "\r\nTotal remaining balance of all work items: " + totalBalance + "\r\n";
 
@@ -135,7 +138,7 @@ function GenerateWarehouseReceiptReport(workItemList){
         let workItem = workItemList[i];
         var workItemMaterialInformation;
         try{
-            workItemMaterialInformation = workItem.Products;
+            workItemMaterialInformation = workItem.Materials;
 
             console.log("Mat info: " + workItemMaterialInformation)
         } catch (error){
@@ -143,7 +146,7 @@ function GenerateWarehouseReceiptReport(workItemList){
         }
 
             //constructor(inventoryNumber, productName, manufacturer, unitPrice, quantity){
-        content += "         |          | " + workItemMaterialInformation.inventoryNumber + "\t| " + workItemMaterialInformation.productName + "\t| " + workItemMaterialInformation.manufacturer + "\r\n"; 
+        content += "         |          | " + workItemMaterialInformation.Inventory_ID + "\t| " + workItemMaterialInformation.Material_Name + "\t| " + workItemMaterialInformation.Description + "\r\n"; 
     }
 
     console.log("Report text generated. Text: " + content);
@@ -151,25 +154,28 @@ function GenerateWarehouseReceiptReport(workItemList){
 }
 
 function CreateTextFile(reportName, content){
-    console.log("Enter CreateTextFile()");
+    try{
+        console.log("Enter CreateTextFile()");
 
-    // make sure directory exists
-    let filename = FilenameGenerator.GenerateFilename(reportName, ".txt");
-    let directory = PathToReports;
-    if(!fs.existsSync(directory)){
-        console.log("Making directory " + directory);
-        fs.mkdirSync(directory);
-    }
-
-    let fullpath = directory + "/" + filename;
-    console.log("Creating file at " + fullpath)
-    fs.writeFileSync(fullpath, content, err => {
-        if (err) {
-            return new ErrorCode.ErrorCode(E_CouldNotCreateFile, "File " + fullpath + " was not able to be saved.", null);
+        // make sure directory exists
+        let filename = FilenameGenerator.GenerateFilename(reportName, ".txt");
+        let directory = PathToReports;
+        if(!fs.existsSync(directory)){
+            console.log("Making directory " + directory);
+            fs.mkdirSync(directory);
         }
-        // file written successfully
-        console.log("File created successfully");
-    })
 
-    return fullpath;
+        let fullpath = directory + "/" + filename;
+        console.log("Creating file at " + fullpath)
+        fs.writeFileSync(fullpath, content, err => {
+            if (err) {
+                return new ErrorCode.ErrorCode(E_CouldNotCreateFile, "File " + fullpath + " was not able to be saved.", null);
+            }
+            // file written successfully
+        })
+        console.log("File created successfully");
+        return fullpath
+    } catch(error){
+        console.error(error)
+    }
 }
