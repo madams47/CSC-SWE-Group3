@@ -92,6 +92,77 @@ app.post("/CreateWorkItem", (request, response) => {
 });
 
 
+app.post("/CreateUser", (request, response) => {
+    const User_Name = request.body.userUser_Name;
+    const Pass = request.body.userPass;
+   
+
+    const sql = `
+        INSERT INTO login
+        (User_Name, Pass)
+        VALUES (?, ?)`;
+
+    db.query(sql, [User_Name, Pass], (error, data) => {
+            if (error) {
+                return response.json("Error: " + error.message);
+            } else {
+                return response.send("Values Inserted");
+            }
+        });
+});
+
+
+app.post("/deleteUser/:User_Name", (request, response) => {
+    const User_Name = request.params.User_Name;
+
+    const sql = `
+        DELETE FROM login
+        WHERE User_Name = ?
+    `;
+
+    db.query(sql, [User_Name], (error, result) => {
+        if (error) {
+            return response.status(500).json({ error: 'Error deleting user' });
+        }
+
+        if (result.affectedRows === 0) {
+            return response.status(404).json({ error: 'user not found' });
+        }
+
+        return response.status(200).json({ message: 'user deleted successfully' });
+    });
+});
+
+app.put("/updateUser/:User_Name", (request, response) => {
+    const User_Name = request.params.User_Name;
+    const Pass = request.body.Pass;
+    const NewUser_Name = request.body.NewUser_Name; // Assuming you want to update User_Name
+
+    console.log("Received PUT request for User_Name:", User_Name);
+    console.log("Request body:", request.body);
+
+    const sql = `
+        UPDATE login
+        SET
+        User_Name = COALESCE(?, User_Name),
+        Pass = COALESCE(?, Pass)
+        WHERE User_Name = ?`;
+
+    console.log("SQL query:", sql);
+    
+    db.query(sql, [NewUser_Name, Pass, User_Name], (error, data) => {
+        if (error) {
+            console.error("Database error:", error);
+            return response.status(500).json({ error: "Database error" });
+        }
+
+        console.log("Update successful. Rows affected:", data.affectedRows);
+        return response.status(200).json({ message: "Values Updated" });
+    });
+});
+
+
+
 app.post("/deleteWorkItem/:Job_ID", (request, response) => {
     const Job_ID = request.params.Job_ID;
 
@@ -118,6 +189,14 @@ app.post("/deleteWorkItem/:Job_ID", (request, response) => {
 
 app.get("/GetWorkItem", (request, response) => {
     const sql = "SELECT Job_ID, Contractor_ID, Job_Name, Order_Date FROM job";
+    db.query(sql, (error, data) => {
+        if(error) return app.json ("Error");
+        return response.json(data);
+    })
+} )
+
+app.get("/GetUserCredentials", (request, response) => {
+    const sql = "SELECT * FROM login";
     db.query(sql, (error, data) => {
         if(error) return app.json ("Error");
         return response.json(data);
@@ -177,10 +256,30 @@ app.put("/UpdateWorkItem/:Job_ID", (request, response) => {
 
 app.post('/login', (request, response) => 
 {
-    const User_Name=request.body.User_Name;
-    const Pass=request.body.Pass;
-    console.log(request.body.User_Name);
-    console.log(request.body.Pass);
+    const User_Name=request.body.userUser_Name;
+    const Pass=request.body.userPass;
+    console.log('Received username:', User_Name);
+    console.log('Received password:', Pass);
+    const sql = "SELECT * FROM login WHERE User_Name = ? AND  Pass = ?";
+    db.query(sql, [User_Name, Pass], (err, result) => {
+        if(err) return response.json({Status: "Error", Error: "Error in running query"});
+        if(result.length > 0) {
+            return response.json({Status: "Success"})
+        } else {
+           
+               //console.log(db.query);
+               return response.json({Status: "Error", Error: "Wrong Email or Password"});
+            
+        }
+    })
+})
+
+app.post('/adminlogin', (request, response) => 
+{
+    const User_Name=request.body.adminUser_Name;
+    const Pass=request.body.adminPass;
+    //console.log('Received username:', User_Name);
+    //console.log('Received password:', Pass);
     const sql = "SELECT * FROM login WHERE User_Name = ? AND  Pass = ?";
     db.query(sql, [User_Name, Pass], (err, result) => {
         if(err) return response.json({Status: "Error", Error: "Error in running query"});
