@@ -23,7 +23,7 @@ function UpdateWorkItem(){
 
     function handleSubmit(event) {
         event.preventDefault();
-        const url = `http://localhost:8081/UpdateworkItem/${Job_ID}`;
+        const url = `http://34.207.59.25:8081/UpdateworkItem/${Job_ID}`;
         axios.put(url, {Address_ID, Contractor_ID, 
         Job_Name, Order_Date,install_Date,Payment_Terms,Salesman,Total_Material,Total_Labor,Total,Complete})
     .then(response => {
