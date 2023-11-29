@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors(
     {
-        "origin": 'http://34.207.59.25:3000',
+        "origin": 'http://localhost:3000',
         "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
         "preflightContinue": false,
         "optionsSuccessStatus": 200,
@@ -18,7 +18,7 @@ app.use(cors(
       }));
 
 var allowCrossDomain = function(req,res,next) {
-    res.header('Access-Control-Allow-Origin', 'http://34.207.59.25:3000');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -323,7 +323,26 @@ app.post("/GetWorkItemByIds/:Work_Item_ID_List", (request, response) =>{
 
 })
 
+app.post("/RemoveJobMaterialsMatchingId/", (request, response) =>{
+    const Job_ID = request.body.Job_ID;
 
+    const sql = `
+        DELETE FROM job_material 
+        WHERE Job_ID = ?
+    `;
+
+    db.query(sql, [Job_ID], (error, result) => {
+        if (error) {
+            return response.status(500).json({ error: 'Error deleting job material' });
+        }
+
+        if (result.affectedRows === 0) {
+            return response.status(404).json({ error: 'Job Material not found' });
+        }
+
+        return response.status(200).json({ message: 'Job Material deleted successfully' });
+    });
+})
 
 
 app.get("/GetWorkItem", (request, response) => {

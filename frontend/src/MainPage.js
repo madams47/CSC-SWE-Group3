@@ -15,13 +15,13 @@ import { Link } from 'react-router-dom';
 
     useEffect(()=> {    
         //console.log("useEffect is running"); 
-        axios.get('http://34.207.59.25:8081/GetWorkItem')
+        axios.get('http://localhost:8081/GetWorkItem')
         .then(result => setWorkItem(result.data))
         .catch(err => console.log(err));
     },[])
 
     function handleDelete (workItemId){
-        axios.post(`http://34.207.59.25:8081/deleteWorkItem/${workItemId}`)
+        axios.post(`http://localhost:8081/deleteWorkItem/${workItemId}`)
         .then(result => {
             console.log(result);
             window.location.reload();
