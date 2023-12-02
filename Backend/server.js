@@ -286,7 +286,7 @@ app.post("/generateReport/", (request, res) =>{
         let fileName = result.split('\\').pop().split('/').pop();
         console.log(fileName)
 
-        res.download(path.resolve(result), fileName)
+        res.download(result, fileName)
     } else {
         console.log("Sending result")
         res.download(result)
@@ -317,8 +317,8 @@ app.get("/GetMaterialsMatchingInventoryIds/:Inventory_ID_List", (request, respon
     
 });
 
-app.get("/GetWorkItemByIds/:Work_Item_ID_List", (request, response) =>{
-    const Work_Item_ID_List = request.params.Work_Item_ID_List;
+app.get("/GetWorkItemByIds/:Job_IDs", (request, response) =>{
+    const Work_Item_ID_List = request.params.Job_IDs;
 
     console.log(Work_Item_ID_List.split(",").map(function(str) {return parseInt(str)}))
     db.query(`SELECT * FROM job WHERE Job_ID IN (?)`, [Work_Item_ID_List.split(",").map(function(str) {return parseInt(str)})], (error, workItem) => {

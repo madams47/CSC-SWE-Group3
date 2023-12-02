@@ -29,12 +29,12 @@ function GenerateReport() {
 
       // Get Work Item Header information for each work item
       const workItemHeaderUrl = `http://localhost:8081/GetWorkItemByIds/${Job_IDs}`
-      const WorkItemHeaderResponse = await axios.post(workItemHeaderUrl)
+      const WorkItemHeaderResponse = await axios.get(workItemHeaderUrl)
       const WorkItemHeaderDataList = WorkItemHeaderResponse.data
 
       // Get JobMaterial information 
       const jobMaterialUrl = `http://localhost:8081/GetJobMaterialsMatchingIds/${Job_IDs}`
-      const jobMaterialResponse = await axios.post(jobMaterialUrl);
+      const jobMaterialResponse = await axios.get(jobMaterialUrl);
       const JobMaterialsList = jobMaterialResponse.data
 
       // Get Materials for all each work item
@@ -45,7 +45,7 @@ function GenerateReport() {
       }
       const materialsUrl = `http://localhost:8081/GetMaterialsMatchingInventoryIds/${Inventory_IDs}`
       // Use data from the first response in the second request
-      const MaterialsListResponse = await axios.post(materialsUrl);
+      const MaterialsListResponse = await axios.get(materialsUrl);
       const MaterialsList = MaterialsListResponse.data
 
       let WorkItemList = []
