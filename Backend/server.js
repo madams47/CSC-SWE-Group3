@@ -293,7 +293,7 @@ app.post("/generateReport/", (request, res) =>{
     }
 });
 
-app.post("/GetJobMaterialsMatchingIds/:Job_IDs", (request, response) => {
+app.get("/GetJobMaterialsMatchingIds/:Job_IDs", (request, response) => {
     const Job_IDs = request.params.Job_IDs;
     //.map(function(str) {return parseInt(str); })
     console.log(Job_IDs)
@@ -303,7 +303,7 @@ app.post("/GetJobMaterialsMatchingIds/:Job_IDs", (request, response) => {
     })
 });
 
-app.post("/GetMaterialsMatchingInventoryIds/:Inventory_ID_List", (request, response) => {
+app.get("/GetMaterialsMatchingInventoryIds/:Inventory_ID_List", (request, response) => {
     const Inventory_ID_List = request.params.Inventory_ID_List;
 
     db.query(`SELECT * FROM material WHERE Inventory_ID IN (?)`, [Inventory_ID_List.split(",").map(function(str) {return parseInt(str);})], (error, material) => {
@@ -317,7 +317,7 @@ app.post("/GetMaterialsMatchingInventoryIds/:Inventory_ID_List", (request, respo
     
 });
 
-app.post("/GetWorkItemByIds/:Work_Item_ID_List", (request, response) =>{
+app.get("/GetWorkItemByIds/:Work_Item_ID_List", (request, response) =>{
     const Work_Item_ID_List = request.params.Work_Item_ID_List;
 
     console.log(Work_Item_ID_List.split(",").map(function(str) {return parseInt(str)}))
@@ -345,7 +345,7 @@ app.post("/RemoveJobMaterialsMatchingId/", (request, response) =>{
         }
 
         if (result.affectedRows === 0) {
-            return response.status(404).json({ error: 'Job Material not found' });
+            return response.status(200).json({ error: 'Job Material not found' });
         }
 
         return response.status(200).json({ message: 'Job Material deleted successfully' });

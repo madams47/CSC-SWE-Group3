@@ -35,6 +35,7 @@ function UpdateWorkItem(){
     const [selectedMaterials, setSelectedMaterials] = useState ([]); //confusing name, but represents the selected items in the Added Materials grid
 
 
+    const [filledMaterials, setFilledMaterials] = useState(false)
 
     const navigate=useNavigate();
     
@@ -46,6 +47,66 @@ function UpdateWorkItem(){
 
     },[refreshKey])
 
+    useEffect(() => {
+        if(filledMaterials == true)
+            return; // since this might get called multiple times, only run it once
+
+        const Job_IDs = Job_ID
+        axios.get(`http://localhost:8081/GetJobMaterialsMatchingIds/${Job_IDs}`).then(result => {
+            const jobMaterials = result.data;
+
+            const materials = []
+            for(let i = 0; i < jobMaterials.length; i++){
+                for(let j = 0; j < MaterialsList.length; j++){
+                    if(MaterialsList[j].Inventory_ID == jobMaterials[i].Inventory_ID)
+                        materials.push(MaterialsList[j])
+                }
+            }
+            setAddedMaterialIds(materials)
+
+            if(materials.length > 0)
+                setFilledMaterials(true)
+
+            for(let i = 0; i < jobMaterials.length; i++){
+                setAddedMaterialIds((prevData) =>
+                    prevData.map((row) => (row.Inventory_ID === jobMaterials[i].Inventory_ID ? { ...row, Quantity: parseInt(jobMaterials[i].Quantity, 10) || 0 } : row))
+                );
+            }
+
+            axios.get(`http://localhost:8081/GetWorkItemByIds/${Job_IDs}`).then(workItemResult => {
+                const workItem = workItemResult.data[0]; // we're only getting 1 work item. The "0th"
+
+                console.log(workItem.Job_Name)
+                // const [Address_ID, set_Address_ID] = useState(null);
+                // const [Contractor_ID, set_Contractor_ID] = useState(null);
+                // const [Job_Name, set_Job_Name] = useState(null);
+                // const [Order_Date, set_Order_Date] = useState(null);
+                // const [install_Date, set_install_Date] = useState(null);
+                // const [Payment_Terms, set_Payment_Terms] = useState(null);
+                // const [Salesman, set_Salesman] = useState(null);
+                // const [Total_Material, set_Total_Material] = useState(null);
+                // const [Total_Labor, set_Total_Labor] = useState(null);
+                // const [Total, set_Total] = useState(null);
+                // const [Complete, set_Complete] = useState(null);
+
+                set_Address_ID(workItem.Address_ID)
+                set_Contractor_ID(workItem.Contractor_ID)
+                set_Job_Name(workItem.Job_Name)
+
+                let orderDate = new Date(workItem.Order_Date).toISOString().split('T')[0]
+                let installDate = new Date(workItem.Install_Date).toISOString().split('T')[0]
+                set_Order_Date(orderDate)
+                set_install_Date(installDate)
+                set_Payment_Terms(workItem.Payment_Terms)
+                set_Salesman(workItem.Salesman)
+                set_Total_Material(workItem.Total_Material)
+                set_Total_Labor(workItem.Total_Labor)
+                set_Total(workItem.Total)
+                set_Complete(workItem.Complete)
+            })
+        })
+    },[MaterialsList])
+
     function handleSubmit(event) {
         event.preventDefault();
         const url = `http://localhost:8081/UpdateworkItem/${Job_ID}`;
@@ -53,17 +114,17 @@ function UpdateWorkItem(){
         Job_Name, Order_Date,install_Date,Payment_Terms,Salesman,Total_Material,Total_Labor,Total,Complete})
     .then(response => {
       if (response.status === 200) {
-        console.log(response.data.message); // 'Values Updated'
+        console.log(response.data.message); // 'Values Updated' 
 
         // remove all JobMaterial entries in DB with matching Job ID
         // we will re-add all old (or new) JobMaterials immediately after
         axios.post(`http://localhost:8081/RemoveJobMaterialsMatchingId`, {Job_ID}).then(result => {
         for(let i = 0; i < addedMaterialIds.length; i++){
+            const jobId = Job_ID
             const inventoryId = addedMaterialIds[i].Inventory_ID
-            const quantity = addedMaterialIds[i].quantity
-            axios.post('http://localhost:8081/CreateJobMaterial', {Job_ID, inventoryId, quantity}).then(result =>{
+            const quantity = addedMaterialIds[i].Quantity
+            axios.post('http://localhost:8081/CreateJobMaterial', {jobId, inventoryId, quantity}).then(result =>{
                 console.log(result);
-                navigate('/MainPage');
             }).catch(error => console.log(error));
         }
 
@@ -71,6 +132,8 @@ function UpdateWorkItem(){
       } else {
         console.error(response.data.error); // Handle the error
       }
+
+    navigate('/MainPage');
     })
     .catch(error => {
       console.error(error);
@@ -201,57 +264,57 @@ function UpdateWorkItem(){
                     <div className='d-flex flex-wrap'>
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Address_ID</label>
-                            <input type="text" placeholder='Enter Address_ID' className='form-control' 
+                            <input type="text" value={Address_ID} placeholder='Enter Address_ID' className='form-control' 
                             onChange={e => set_Address_ID(e.target.value || null)}/>
                         </div> 
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Contractor_ID</label>
-                            <input type="text" placeholder='Enter Contractor_ID' className='form-control'
+                            <input type="text" value={Contractor_ID} placeholder='Enter Contractor_ID' className='form-control'
                             onChange={e => set_Contractor_ID(e.target.value || null)} />
                         </div> 
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Job Name</label>
-                            <input type="text" placeholder='Enter Job Name' className='form-control' 
+                            <input type="text" value={Job_Name} placeholder='Enter Job Name' className='form-control' 
                             onChange={e => set_Job_Name(e.target.value || null)}/>
                         </div>
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Order Date</label>
-                            <input type="date" placeholder='Enter Order Date' className='form-control' 
+                            <input type="date" value={Order_Date} placeholder='Enter Order Date' className='form-control' 
                             onChange={e => set_Order_Date(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Install Date</label>
-                            <input type="date" placeholder='Enter Install Date' className='form-control' 
+                            <input type="date" value={install_Date} placeholder='Enter Install Date' className='form-control' 
                             onChange={e => set_install_Date(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Payment Terms</label>
-                            <input type="number" placeholder='Enter Payment Terms' className='form-control' 
+                            <input type="number" value={Payment_Terms} placeholder='Enter Payment Terms' className='form-control' 
                             onChange={e => set_Payment_Terms(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Salesman</label>
-                            <input type="text" placeholder='Enter Salesman name' className='form-control' 
+                            <input type="text" value={Salesman} placeholder='Enter Salesman name' className='form-control' 
                             onChange={e => set_Salesman(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Total Material</label>
-                            <input type="number" placeholder='Enter Total Material' className='form-control' 
+                            <input type="number" value={Total_Material} placeholder='Enter Total Material' className='form-control' 
                             onChange={e => set_Total_Material(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Total Labor</label>
-                            <input type="number" placeholder='Enter Total Labor' className='form-control' 
+                            <input type="number" value={Total_Labor} placeholder='Enter Total Labor' className='form-control' 
                             onChange={e => set_Total_Labor(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Total</label>
-                            <input type="number" placeholder='Enter Total' className='form-control' 
+                            <input type="number" value={Total} placeholder='Enter Total' className='form-control' 
                             onChange={e => set_Total(e.target.value || null)}/>
                         </div>  
                         <div className='mb-2 w-50'>
                             <label htmlFor="">Complete</label>
-                            <input type="boolean" placeholder='Enter if Complete' className='form-control' 
+                            <input type="boolean" value={Complete} placeholder='Enter if Complete' className='form-control' 
                             onChange={e => set_Complete(e.target.value || null)}/>
                         </div>  
                         </div>
