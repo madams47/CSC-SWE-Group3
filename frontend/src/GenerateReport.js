@@ -28,12 +28,12 @@ function GenerateReport() {
       const Job_IDs = Work_Item_List.split(",")
 
       // Get Work Item Header information for each work item
-      const workItemHeaderUrl = `http://localhost:8081/GetWorkItemByIds/${Job_IDs}`
+      const workItemHeaderUrl = `http://34.207.59.25:8081/GetWorkItemByIds/${Job_IDs}`
       const WorkItemHeaderResponse = await axios.get(workItemHeaderUrl)
       const WorkItemHeaderDataList = WorkItemHeaderResponse.data
 
       // Get JobMaterial information 
-      const jobMaterialUrl = `http://localhost:8081/GetJobMaterialsMatchingIds/${Job_IDs}`
+      const jobMaterialUrl = `http://34.207.59.25:8081/GetJobMaterialsMatchingIds/${Job_IDs}`
       const jobMaterialResponse = await axios.get(jobMaterialUrl);
       const JobMaterialsList = jobMaterialResponse.data
 
@@ -43,7 +43,7 @@ function GenerateReport() {
         if(!Inventory_IDs.includes(JobMaterialsList[i].Inventory_ID))
           Inventory_IDs.push(JobMaterialsList[i].Inventory_ID) // add distinct ID's (no repeats)
       }
-      const materialsUrl = `http://localhost:8081/GetMaterialsMatchingInventoryIds/${Inventory_IDs}`
+      const materialsUrl = `http://34.207.59.25:8081/GetMaterialsMatchingInventoryIds/${Inventory_IDs}`
       // Use data from the first response in the second request
       const MaterialsListResponse = await axios.get(materialsUrl);
       const MaterialsList = MaterialsListResponse.data
@@ -72,7 +72,7 @@ function GenerateReport() {
       // We finally have our work item list to pass to the server
       console.log(WorkItemList)
 
-      const url = `http://localhost:8081/GenerateReport`
+      const url = `http://34.207.59.25:8081/GenerateReport`
       await axios.post(url, {WorkItemList, selectedReportType, selectedFileType})
         .then(result =>{
           console.log(result)

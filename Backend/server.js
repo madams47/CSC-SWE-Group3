@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors(
     {
-        "origin": 'http://localhost:3000',
+        "origin": 'http://34.207.59.25:3000',
         "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
         "preflightContinue": false,
         "optionsSuccessStatus": 200,
@@ -19,7 +19,7 @@ app.use(cors(
       }));
 
 var allowCrossDomain = function(req,res,next) {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Origin', 'http://34.207.59.25:3000');
     res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 
