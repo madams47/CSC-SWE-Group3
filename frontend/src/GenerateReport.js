@@ -73,13 +73,31 @@ function GenerateReport() {
       console.log(WorkItemList)
 
       const url = `http://localhost:8081/GenerateReport`
-      axios.post(url, {WorkItemList, selectedReportType, selectedFileType})
+      await axios.post(url, {WorkItemList, selectedReportType, selectedFileType})
         .then(result =>{
           console.log(result)
+          // const disposition = result.headers.get('content-disposition');
+          // let fileName = ''
+          
+          // if (disposition && disposition.indexOf('attachment') !== -1) {
+          //   const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+          //   if (matches != null && matches[1]) {
+          //     fileName = matches[1].replace(/['"]/g, '');
+          //   }
+          // }
+
+          // console.log("Filename: ", fileName)
+
+          const blob = result.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'filename.extension'; // Set the desired file name
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
           navigate('/MainPage');
         })
-
-
     } catch (error) {
       console.error('Error:', error);
     }

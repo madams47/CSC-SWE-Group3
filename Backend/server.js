@@ -5,6 +5,7 @@ import * as ReportingEngine from './ReportingEngine/ReportingEngine.js';
 import * as TextFileSupportedOperations from './ReportingEngine/Operations/TextFileOperations/SupportedOperations.js';
 import React from 'react'
 import { useLocation } from 'react-router-dom';
+import path from 'path';
 const app = express(); 
 
 app.use(express.json());
@@ -277,11 +278,18 @@ app.post("/generateReport/", (request, res) =>{
     console.log("Result type:  " + typeof(result) + " \tResult: " + result);
 
     if(typeof(result) == "string"){
-        let filename = result;
-        res.download(result)
+        let path = result;
+        console.log("Download result")
+        console.log(path)
+        // Set the Content-Disposition header to suggest a filename for the browser
+        //res.setHeader('Content-Disposition', `attachment; filename="E:${result}"`);
+        let fileName = result.split('\\').pop().split('/').pop();
+        console.log(fileName)
+
+        res.download(path.resolve(result), fileName)
     } else {
         console.log("Sending result")
-        res.send(result)
+        res.download(result)
     }
 });
 
