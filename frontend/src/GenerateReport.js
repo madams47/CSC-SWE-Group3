@@ -51,6 +51,7 @@ function GenerateReport() {
       let WorkItemList = []
       for(let i = 0; i < WorkItemHeaderDataList.length; i++){
         let h = WorkItemHeaderDataList[i]
+        console.log(h)
         // get list of materials for work item
         let ProductList = []
         for(let j = 0; j < JobMaterialsList.length; j++){
@@ -65,7 +66,7 @@ function GenerateReport() {
             }
           }
         }
-        WorkItemList.push(new WorkItem(new WorkItemInfo(Job_IDs[i], h.Address_ID, h.Contractor_ID, h.Job_Name, h.Order_Date, h.Install_Date, h.PaymentTerms, h.Salesman, h.Total_Material, h.Total_Labor, h.Complete),
+        WorkItemList.push(new WorkItem(new WorkItemInfo(Job_IDs[i], h.Address_ID, h.Contractor_ID, h.Job_Name, h.Order_Date, h.Install_Date, h.PaymentTerms, h.Salesman, h.Total_Material, h.Total_Labor, h.Total, h.Complete),
         null, null, null, ProductList, null))
       }
 
@@ -73,7 +74,8 @@ function GenerateReport() {
       console.log(WorkItemList)
 
       const url = `http://34.207.59.25:8081/GenerateReport`
-      await axios.post(url, {WorkItemList, selectedReportType, selectedFileType})
+      console.log(WorkItemList)
+      await axios.post(url, {WorkItemList, selectedReportType, selectedFileType}, { responseType: 'blob' })
         .then(result =>{
           console.log(result)
           // const disposition = result.headers.get('content-disposition');
@@ -87,15 +89,23 @@ function GenerateReport() {
           // }
 
           // console.log("Filename: ", fileName)
+          const disposition = result.headers['content-disposition']
+          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
 
-          const blob = result.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'filename.extension'; // Set the desired file name
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
+          console.log(disposition)
+          const matches = filenameRegex.exec(disposition);
+          let filename = 'Report'; // Default filename if not found in header
+    
+          if (matches != null && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
+          }
+          const url = window.URL.createObjectURL(new Blob([result.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', filename + ".txt") 
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
           navigate('/MainPage');
         })
     } catch (error) {
