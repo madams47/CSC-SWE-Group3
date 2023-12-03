@@ -11,13 +11,13 @@ import { Link} from 'react-router-dom';
 
     useEffect(()=> {    
         //console.log("useEffect is running"); 
-        axios.get('http://localhost:8081/GetUserCredentials')
+        axios.get('http://34.207.59.25:8081/GetUserCredentials')
         .then(result => setUserCredentials(result.data))
         .catch(err => console.log(err));
     },[])
 
     function handleDelete (User_Name){
-        axios.post(`http://localhost:8081/deleteUser/${User_Name}`)
+        axios.post(`http://34.207.59.25:8081/deleteUser/${User_Name}`)
         .then(result => {
             console.log(result);
             window.location.reload();

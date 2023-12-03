@@ -10,7 +10,7 @@ function Test()
 
     function handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://localhost:8081/Login/', {User_Name, Pass})
+        axios.post('http://34.207.59.25:8081/Login/', {User_Name, Pass})
         .then(result => {
             //navigate('/')
         }).catch(error => console.log(error));
