@@ -28,12 +28,12 @@ function GenerateReport() {
       const Job_IDs = Work_Item_List.split(",")
 
       // Get Work Item Header information for each work item
-      const workItemHeaderUrl = `http://34.207.59.25:8081/GetWorkItemByIds/${Job_IDs}`
+      const workItemHeaderUrl = `http://localhost:8081/GetWorkItemByIds/${Job_IDs}`
       const WorkItemHeaderResponse = await axios.get(workItemHeaderUrl)
       const WorkItemHeaderDataList = WorkItemHeaderResponse.data
 
       // Get JobMaterial information 
-      const jobMaterialUrl = `http://34.207.59.25:8081/GetJobMaterialsMatchingIds/${Job_IDs}`
+      const jobMaterialUrl = `http://localhost:8081/GetJobMaterialsMatchingIds/${Job_IDs}`
       const jobMaterialResponse = await axios.get(jobMaterialUrl);
       const JobMaterialsList = jobMaterialResponse.data
 
@@ -43,7 +43,7 @@ function GenerateReport() {
         if(!Inventory_IDs.includes(JobMaterialsList[i].Inventory_ID))
           Inventory_IDs.push(JobMaterialsList[i].Inventory_ID) // add distinct ID's (no repeats)
       }
-      const materialsUrl = `http://34.207.59.25:8081/GetMaterialsMatchingInventoryIds/${Inventory_IDs}`
+      const materialsUrl = `http://localhost:8081/GetMaterialsMatchingInventoryIds/${Inventory_IDs}`
       // Use data from the first response in the second request
       const MaterialsListResponse = await axios.get(materialsUrl);
       const MaterialsList = MaterialsListResponse.data
@@ -51,6 +51,7 @@ function GenerateReport() {
       let WorkItemList = []
       for(let i = 0; i < WorkItemHeaderDataList.length; i++){
         let h = WorkItemHeaderDataList[i]
+        console.log(h)
         // get list of materials for work item
         let ProductList = []
         for(let j = 0; j < JobMaterialsList.length; j++){
@@ -65,15 +66,16 @@ function GenerateReport() {
             }
           }
         }
-        WorkItemList.push(new WorkItem(new WorkItemInfo(Job_IDs[i], h.Address_ID, h.Contractor_ID, h.Job_Name, h.Order_Date, h.Install_Date, h.PaymentTerms, h.Salesman, h.Total_Material, h.Total_Labor, h.Complete),
+        WorkItemList.push(new WorkItem(new WorkItemInfo(Job_IDs[i], h.Address_ID, h.Contractor_ID, h.Job_Name, h.Order_Date, h.Install_Date, h.PaymentTerms, h.Salesman, h.Total_Material, h.Total_Labor, h.Total, h.Complete),
         null, null, null, ProductList, null))
       }
 
       // We finally have our work item list to pass to the server
       console.log(WorkItemList)
 
-      const url = `http://34.207.59.25:8081/GenerateReport`
-      await axios.post(url, {WorkItemList, selectedReportType, selectedFileType})
+      const url = `http://localhost:8081/GenerateReport`
+      console.log(WorkItemList)
+      await axios.post(url, {WorkItemList, selectedReportType, selectedFileType}, { responseType: 'blob' })
         .then(result =>{
           console.log(result)
           // const disposition = result.headers.get('content-disposition');
@@ -87,15 +89,23 @@ function GenerateReport() {
           // }
 
           // console.log("Filename: ", fileName)
+          const disposition = result.headers['content-disposition']
+          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
 
-          const blob = result.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'filename.extension'; // Set the desired file name
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
+          console.log(disposition)
+          const matches = filenameRegex.exec(disposition);
+          let filename = 'Report'; // Default filename if not found in header
+    
+          if (matches != null && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
+          }
+          const url = window.URL.createObjectURL(new Blob([result.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', filename + ".txt") 
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
           navigate('/MainPage');
         })
     } catch (error) {

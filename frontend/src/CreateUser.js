@@ -11,7 +11,7 @@ function CreateUser()
 
     function handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://34.207.59.25:8081/CreateUser', {userUser_Name,userPass})
+        axios.post('http://localhost:8081/CreateUser', {userUser_Name,userPass})
         .then(result => {
             console.log(result);
             navigate('/Admin')

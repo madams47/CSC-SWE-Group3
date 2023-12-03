@@ -40,7 +40,7 @@ function UpdateWorkItem(){
     const navigate=useNavigate();
     
     useEffect(()=> {    
-        axios.get('http://34.207.59.25:8081/GetMaterials')
+        axios.get('http://localhost:8081/GetMaterials')
         .then(result => setMaterials(result.data))
         .catch(err => console.log(err));
 
@@ -52,7 +52,7 @@ function UpdateWorkItem(){
             return; // since this might get called multiple times, only run it once
 
         const Job_IDs = Job_ID
-        axios.get(`http://34.207.59.25:8081/GetJobMaterialsMatchingIds/${Job_IDs}`).then(result => {
+        axios.get(`http://localhost:8081/GetJobMaterialsMatchingIds/${Job_IDs}`).then(result => {
             const jobMaterials = result.data;
 
             const materials = []
@@ -73,7 +73,7 @@ function UpdateWorkItem(){
                 );
             }
 
-            axios.get(`http://34.207.59.25:8081/GetWorkItemByIds/${Job_IDs}`).then(workItemResult => {
+            axios.get(`http://localhost:8081/GetWorkItemByIds/${Job_IDs}`).then(workItemResult => {
                 const workItem = workItemResult.data[0]; // we're only getting 1 work item. The "0th"
 
                 console.log(workItem.Job_Name)
@@ -109,7 +109,7 @@ function UpdateWorkItem(){
 
     function handleSubmit(event) {
         event.preventDefault();
-        const url = `http://34.207.59.25:8081/UpdateworkItem/${Job_ID}`;
+        const url = `http://localhost:8081/UpdateworkItem/${Job_ID}`;
         axios.put(url, {Address_ID, Contractor_ID, 
         Job_Name, Order_Date,install_Date,Payment_Terms,Salesman,Total_Material,Total_Labor,Total,Complete})
     .then(response => {
@@ -118,12 +118,12 @@ function UpdateWorkItem(){
 
         // remove all JobMaterial entries in DB with matching Job ID
         // we will re-add all old (or new) JobMaterials immediately after
-        axios.post(`http://34.207.59.25:8081/RemoveJobMaterialsMatchingId`, {Job_ID}).then(result => {
+        axios.post(`http://localhost:8081/RemoveJobMaterialsMatchingId`, {Job_ID}).then(result => {
         for(let i = 0; i < addedMaterialIds.length; i++){
             const jobId = Job_ID
             const inventoryId = addedMaterialIds[i].Inventory_ID
             const quantity = addedMaterialIds[i].Quantity
-            axios.post('http://34.207.59.25:8081/CreateJobMaterial', {jobId, inventoryId, quantity}).then(result =>{
+            axios.post('http://localhost:8081/CreateJobMaterial', {jobId, inventoryId, quantity}).then(result =>{
                 console.log(result);
             }).catch(error => console.log(error));
         }
@@ -142,7 +142,7 @@ function UpdateWorkItem(){
     }
 
     function updateMaxMaterialId(){
-        axios.get('http://34.207.59.25:8081/GetMaxMaterialId')
+        axios.get('http://localhost:8081/GetMaxMaterialId')
         .then(result => {
             console.log(result.data)
             setMaterialMaxId(result.data)
@@ -160,7 +160,7 @@ function UpdateWorkItem(){
         console.log(parseInt(MaterialMaxId) + 1)
         const materialId = parseInt(MaterialMaxId) + 1
 
-        const url = `http://34.207.59.25:8081/CreateMaterial`
+        const url = `http://localhost:8081/CreateMaterial`
         axios.post(url, {materialId, Material_Name, Size, Description, Location})
             .then(result => { 
                 console.log(result)

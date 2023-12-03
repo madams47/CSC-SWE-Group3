@@ -6,6 +6,7 @@ import * as TextFileSupportedOperations from './ReportingEngine/Operations/TextF
 import React from 'react'
 import { useLocation } from 'react-router-dom';
 import path from 'path';
+import fs from 'fs';
 const app = express(); 
 
 app.use(express.json());
@@ -15,13 +16,14 @@ app.use(cors(
         "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
         "preflightContinue": false,
         "optionsSuccessStatus": 200,
-        "credentials": true
+        "credentials": true,
+        "allowedHeaders": ['Content-Type', 'Content-Dispotision']
       }));
 
 var allowCrossDomain = function(req,res,next) {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    //res.header('Access-Control-Allow-Headers', ['Content-Type', 'Content-Disposition']);
 
     next();  
 }
@@ -268,6 +270,7 @@ app.post("/GenerateReport/", (request, res) =>{
     const reportType = request.body.selectedReportType;
     const fileType = request.body.selectedFileType;
 
+    console.log(workItemList)
     console.log("Expect: true")
     console.log(Object.hasOwn(TextFileSupportedOperations.SupportedOperations, reportType))
 
@@ -281,12 +284,18 @@ app.post("/GenerateReport/", (request, res) =>{
         let path = result;
         console.log("Download result")
         console.log(path)
-        // Set the Content-Disposition header to suggest a filename for the browser
-        //res.setHeader('Content-Disposition', `attachment; filename="E:${result}"`);
-        let fileName = result.split('\\').pop().split('/').pop();
-        console.log(fileName)
 
-        res.download(result, fileName)
+
+        //const fileStream = fs.createReadStream(result);
+
+        // Set the Content-Disposition header to suggest a filename for the browser
+        let filename = result.split('\\').pop().split('/').pop();
+        //res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        console.log(filename)
+
+        //fileStream.pipe(res);
+        res.download(result, filename)
+
     } else {
         console.log("Sending result")
         res.download(result)
