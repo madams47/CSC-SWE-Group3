@@ -18,7 +18,7 @@ function LoginPage() {
 
     const handleSubmitUser = (event) => {
         event.preventDefault();
-        axios.post('http://34.207.59.25:8081/login', { userUser_Name, userPass })
+        axios.post('http://localhost:8081/login', { userUser_Name, userPass })
             .then((Response) => {
                 if (Response.data.Status === 'Success') {
                     console.log('success');
@@ -33,7 +33,7 @@ function LoginPage() {
 
     const handleSubmitAdmin = (event) => {
         event.preventDefault();
-        axios.post('http://34.207.59.25:8081/adminlogin', { adminUser_Name, adminPass })
+        axios.post('http://localhost:8081/adminlogin', { adminUser_Name, adminPass })
             .then((Response) => {
                 if (Response.data.Status === 'Success') {
                     console.log('success');
