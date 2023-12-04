@@ -135,18 +135,18 @@ function GenerateWarehouseReceiptReport(workItemList){
     // Headers
     content += "\r\nReceived |   Date   |   Item Information\r\n";
     for(let i = 0; i < workItemList.length; i++){
-        let workItem = workItemList[i];
         var workItemMaterialInformation;
         try{
-            workItemMaterialInformation = workItem.Materials;
-
+            workItemMaterialInformation = workItemList[i].Materials;
             console.log("Mat info: " + workItemMaterialInformation)
+            for(let j = 0; j < workItemMaterialInformation.length; j++){
+                content += "         |          | " + workItemMaterialInformation[j].Inventory_ID + "\t| " + workItemMaterialInformation[j].Material_Name + "\t| " + workItemMaterialInformation[j].Description + "\r\n"; 
+            }
         } catch (error){
             return new ErrorCode.ErrorCode(ErrorCode.E_InvalidWorkItem, "Could not get required information from work item object: " + workItem, null);
         }
 
             //constructor(inventoryNumber, productName, manufacturer, unitPrice, quantity){
-        content += "         |          | " + workItemMaterialInformation.Inventory_ID + "\t| " + workItemMaterialInformation.Material_Name + "\t| " + workItemMaterialInformation.Description + "\r\n"; 
     }
 
     console.log("Report text generated. Text: " + content);

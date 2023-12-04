@@ -15,13 +15,13 @@ import { Link } from 'react-router-dom';
 
     useEffect(()=> {    
         //console.log("useEffect is running"); 
-        axios.get('http://34.207.59.25:8081/GetWorkItem')
+        axios.get('http://localhost:8081/GetWorkItem')
         .then(result => setWorkItem(result.data))
         .catch(err => console.log(err));
     },[])
 
     function handleDelete (workItemId){
-        axios.post(`http://34.207.59.25:8081/deleteWorkItem/${workItemId}`)
+        axios.post(`http://localhost:8081/deleteWorkItem/${workItemId}`)
         .then(result => {
             console.log(result);
             window.location.reload();
@@ -43,7 +43,7 @@ import { Link } from 'react-router-dom';
     //     console.log('Generate Report button clicked');
     //     const selectedJobIds = selectedItems.join(',');
     //     console.log('Selected Job IDs:', selectedJobIds);
-    //     axios.post(`http://34.207.59.25:8081/generateReport/${selectedJobIds}`)
+    //     axios.post(`http://localhost:8081/generateReport/${selectedJobIds}`)
     //         .then(response => {
     //             console.log(response.data); // Handle API response as needed
     //             // Optionally, perform additional actions based on the response
