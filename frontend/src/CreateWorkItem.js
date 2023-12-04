@@ -36,7 +36,7 @@ function CreateWorkItem()
     const navigate=useNavigate();
 
     useEffect(()=> {    
-        axios.get('http://localhost:8081/GetMaterials')
+        axios.get('http://34.207.59.25:8081/GetMaterials')
         .then(result => setMaterials(result.data))
         .catch(err => console.log(err));
 
@@ -45,12 +45,12 @@ function CreateWorkItem()
 
     function handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://localhost:8081/CreateWorkItem', {Address_ID,Contractor_ID,Job_Name,Order_Date, install_Date,Payment_Terms,
+        axios.post('http://34.207.59.25:8081/CreateWorkItem', {Address_ID,Contractor_ID,Job_Name,Order_Date, install_Date,Payment_Terms,
     Salesman,Total_Material,Total_Labor, Total, Complete })
         .then(result => {
             console.log(result);
 
-            axios.get('http://localhost:8081/GetLastInsertedId').then( result => {
+            axios.get('http://34.207.59.25:8081/GetLastInsertedId').then( result => {
                 const jobId = result.data
                 console.log("Result")
                 console.log(result.data)
@@ -58,7 +58,7 @@ function CreateWorkItem()
                     const inventoryId = addedMaterialIds[i].Inventory_ID
                     const quantity = addedMaterialIds[i].Quantity
                     console.log("%d %d %d", jobId, inventoryId, quantity)
-                    axios.post('http://localhost:8081/CreateJobMaterial', {jobId, inventoryId, quantity})
+                    axios.post('http://34.207.59.25:8081/CreateJobMaterial', {jobId, inventoryId, quantity})
                     .then(result => {
                         console.log(result);
                         navigate('/MainPage')
@@ -72,7 +72,7 @@ function CreateWorkItem()
     }
 
     function updateMaxMaterialId(){
-        axios.get('http://localhost:8081/GetMaxMaterialId')
+        axios.get('http://34.207.59.25:8081/GetMaxMaterialId')
         .then(result => {
             console.log(result.data)
             setMaterialMaxId(result.data)
@@ -90,7 +90,7 @@ function CreateWorkItem()
         console.log(parseInt(MaterialMaxId) + 1)
         const materialId = parseInt(MaterialMaxId) + 1
 
-        const url = `http://localhost:8081/CreateMaterial`
+        const url = `http://34.207.59.25:8081/CreateMaterial`
         axios.post(url, {materialId, Material_Name, Size, Description, Location})
             .then(result => { 
                 console.log(result)

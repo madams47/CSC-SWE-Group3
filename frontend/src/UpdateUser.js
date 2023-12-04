@@ -10,7 +10,7 @@ function UpdateUser() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    const url = `http://localhost:8081/updateUser/${userNameParam}`;
+    const url = `http://34.207.59.25:8081/updateUser/${userNameParam}`;
     axios
       .put(url, { NewUser_Name: newUserName, Pass: userPass }) // Adjust parameter names
       .then((response) => {
